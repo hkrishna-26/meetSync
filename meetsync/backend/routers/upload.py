@@ -55,10 +55,13 @@ def upload_audio(
     )
     
     try:
+        print("Saving to database...")
         db.add(db_meeting)
         db.commit()
+        print(f"Saved meeting ID: {db_meeting.id}")
         db.refresh(db_meeting)
     except Exception as e:
+        print(f"Database error occurred: {str(e)}")
         # Cleanup the saved file if database insertion fails
         if os.path.exists(file_path):
             os.remove(file_path)

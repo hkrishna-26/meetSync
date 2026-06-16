@@ -20,7 +20,7 @@ class AgentState(TypedDict):
 # Step 2 - Create ChatGroq LLM
 groq_api_key = os.getenv("GROQ_API_KEY")
 llm = ChatGroq(
-    model="llama3-8b-8192",
+    model="llama-3.3-70b-versatile",
     groq_api_key=groq_api_key,
     temperature=0.0  # Set temperature to 0 for structured/consistent outputs
 )

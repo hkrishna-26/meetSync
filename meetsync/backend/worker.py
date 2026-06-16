@@ -2,6 +2,7 @@ import os
 from celery import Celery
 from dotenv import load_dotenv
 from groq import Groq
+from uuid import UUID as PyUUID
 
 from database import SessionLocal
 import models
@@ -41,7 +42,7 @@ def process_meeting(meeting_id: str):
     db = SessionLocal()
     try:
         # 1. Update meeting status to "transcribing"
-        meeting = db.query(models.Meeting).filter(models.Meeting.id == meeting_id).first()
+        meeting = db.query(models.Meeting).filter(models.Meeting.id == PyUUID(meeting_id)).first()
         if not meeting:
             print(f"Error: Meeting {meeting_id} not found in database.")
             return f"Meeting {meeting_id} not found"
@@ -127,7 +128,7 @@ def process_meeting(meeting_id: str):
         db.rollback()
         # 5. If anything fails, set status to "failed"
         try:
-            failed_meeting = db.query(models.Meeting).filter(models.Meeting.id == meeting_id).first()
+            failed_meeting = db.query(models.Meeting).filter(models.Meeting.id == PyUUID(meeting_id)).first()
             if failed_meeting:
                 failed_meeting.status = "failed"
                 db.commit()

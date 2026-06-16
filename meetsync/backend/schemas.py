@@ -43,3 +43,12 @@ class MeetingDetailResponse(MeetingResponse):
     blockers: List[BlockerResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MeetingStatusResponse(BaseModel):
+    id: UUID
+    title: str
+    status: str
+
+    model_config = ConfigDict(from_attributes=True)
+

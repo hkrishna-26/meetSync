@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import models
 from database import engine
-from routers import upload
+from routers import upload, meetings
 
 app = FastAPI(
     title="MeetSync API",
@@ -30,6 +30,7 @@ def on_startup():
 
 # Include routers
 app.include_router(upload.router)
+app.include_router(meetings.router)
 
 @app.get("/health")
 def health_check():
