@@ -1,0 +1,4 @@
+/* MeetSync App-level custom styles */
+.printable-results {
+  transition: opacity 0.3s;
+}
