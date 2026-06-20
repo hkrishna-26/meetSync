@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = () => {
@@ -60,18 +59,8 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard" style={linkStyle} onClick={(e) => e.preventDefault()}>
-              <span style={{ marginRight: '12px' }}>📊</span> Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/history" style={linkStyle} onClick={(e) => e.preventDefault()}>
+            <NavLink to="/history" style={linkStyle}>
               <span style={{ marginRight: '12px' }}>📜</span> History
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/settings" style={linkStyle} onClick={(e) => e.preventDefault()}>
-              <span style={{ marginRight: '12px' }}>⚙️</span> Settings
             </NavLink>
           </li>
         </ul>
