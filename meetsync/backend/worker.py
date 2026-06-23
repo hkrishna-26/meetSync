@@ -52,25 +52,36 @@ def process_meeting(meeting_id: str):
         print(f"Meeting {meeting_id} status updated to 'transcribing'")
 
         # 2. Call Groq Whisper API to transcribe the audio file
-        audio_path = os.path.join("uploads", meeting.audio_filename)
+        from storage import download_audio
+        print(f"Downloading audio file {meeting.audio_filename} from Supabase Storage...")
+        audio_path = download_audio(meeting.audio_filename)
+
         if not os.path.exists(audio_path):
-            raise FileNotFoundError(f"Audio file not found at {audio_path}")
+            raise FileNotFoundError(f"Downloaded audio file not found at {audio_path}")
 
-        print(f"Sending audio file {audio_path} to Groq Whisper API...")
-        groq_api_key = os.getenv("GROQ_API_KEY")
-        if not groq_api_key:
-            raise ValueError("GROQ_API_KEY environment variable is not set")
+        try:
+            print(f"Sending audio file {audio_path} to Groq Whisper API...")
+            groq_api_key = os.getenv("GROQ_API_KEY")
+            if not groq_api_key:
+                raise ValueError("GROQ_API_KEY environment variable is not set")
+                
+            client = Groq(api_key=groq_api_key)
+
+            with open(audio_path, "rb") as audio_file:
+                transcription = client.audio.transcriptions.create(
+                    file=(meeting.audio_filename, audio_file.read()),
+                    model="whisper-large-v3",
+                )
             
-        client = Groq(api_key=groq_api_key)
-
-        with open(audio_path, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                file=(meeting.audio_filename, audio_file.read()),
-                model="whisper-large-v3",
-            )
-        
-        transcript_text = transcription.text
-        print(f"Transcription completed successfully for meeting {meeting_id}")
+            transcript_text = transcription.text
+            print(f"Transcription completed successfully for meeting {meeting_id}")
+        finally:
+            if os.path.exists(audio_path):
+                try:
+                    os.remove(audio_path)
+                    print(f"Deleted temporary file: {audio_path}")
+                except Exception as cleanup_err:
+                    print(f"Failed to delete temporary file {audio_path}: {str(cleanup_err)}")
 
         # 3. Update status to "analysing", saves transcript
         meeting.status = "analysing"

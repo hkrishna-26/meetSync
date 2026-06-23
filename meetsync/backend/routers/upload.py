@@ -35,12 +35,12 @@ def upload_audio(
 
     # Generate unique filename
     unique_filename = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(UPLOAD_DIR, unique_filename)
 
-    # Save the file to the uploads/ directory
+    # Read file bytes and upload to Supabase Storage
     try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(audio.file, buffer)
+        file_bytes = audio.file.read()
+        from storage import upload_audio
+        upload_audio(file_bytes, unique_filename)
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -62,9 +62,6 @@ def upload_audio(
         db.refresh(db_meeting)
     except Exception as e:
         print(f"Database error occurred: {str(e)}")
-        # Cleanup the saved file if database insertion fails
-        if os.path.exists(file_path):
-            os.remove(file_path)
         raise HTTPException(
             status_code=500,
             detail=f"Database error while creating meeting: {str(e)}"
